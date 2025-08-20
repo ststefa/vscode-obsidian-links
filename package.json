@@ -1,0 +1,50 @@
+{
+    "name": "vscode-obsidian-links",
+    "displayName": "VSCode Obsidian Links",
+    "author": "Stefan Steinert <ststefa@heldenzeit.net>",
+    "publisher": "StefanSteinert",
+    "version": "0.1.0",
+    "description": "Make obsidian:// links clickable",
+    "icon": "images/icon.png",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "activationEvents": [
+        "onStartupFinished",
+        "onLanguage:markdown",
+        "onWebviewPanel:markdown.preview",
+        "onCommand:markdown.showPreview",
+        "onCommand:markdown.showPreviewToSide",
+        "onCommand:markdown.showSource"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "markdown.markdownItPlugins": true,
+        "commands": [
+            {
+                "command": "vscode-obsidian-links.openLink",
+                "title": "Open Obsidian Link"
+            }
+        ]
+    },
+    "categories": [
+        "Other"
+    ],
+    "repository": {
+        "url": "https://github.com/ststefa/vscode-obsidian-links"
+    },
+    "license": "CC-BY-SA-4.0",
+    "devDependencies": {
+        "@types/node": "^24.3.0",
+        "@vscode/vsce": "^3.6.0"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "obsidian",
+        "markdown",
+        "links",
+        "click"
+    ]
+}
