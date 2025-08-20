@@ -62,25 +62,25 @@ function activate(context) {
           // We'll read query param regardless.
         }
         const params = new URLSearchParams(uri.query);
-        let href = params.get("href_b64");
-        if (href) {
+        let hrefb64 = params.get("href_b64");
+        if (hrefb64) {
           try {
-            const buf = Buffer.from(href, 'base64');
-            href = buf.toString('utf8');
+            const buf = Buffer.from(hrefb64, 'base64');
+            hrefb64 = buf.toString('utf8');
           } catch (e) {
             console.error('[obsidian-links] Failed to decode href_b64:', e);
-            href = '';
+            hrefb64 = '';
           }
         } else {
-          href = params.get('href') || '';
+          hrefb64 = '';
         }
-        console.log('[obsidian-links] (uriHandler) resolved href =', href);
-        if (!href.startsWith('obsidian://')) {
-          vscode.window.showErrorMessage('[obsidian-links] Missing or invalid href param.');
+        console.log('[obsidian-links] (uriHandler) resolved href64 =', hrefb64);
+        if (!hrefb64.startsWith('obsidian://')) {
+          vscode.window.showErrorMessage('[obsidian-links] Missing or invalid href_b64 param.');
           return;
         }
-        console.log('[obsidian-links] (uriHandler) openExternal ->', href);
-        await vscode.env.openExternal(vscode.Uri.parse(href));
+        console.log('[obsidian-links] (uriHandler) openExternal ->', hrefb64);
+        await vscode.env.openExternal(vscode.Uri.parse(hrefb64));
       } catch (e) {
         console.error("[obsidian-links] uriHandler failed:", e);
         vscode.window.showErrorMessage(String(e));
@@ -103,17 +103,9 @@ function activate(context) {
         const href = tokens[idx].attrs[aIndex][1];
         if (typeof href === "string" && href.startsWith("obsidian://")) {
           // Use base64 to preserve exact obsidian href without double-encoding
-          let b64;
-          try {
-            // Webview provides btoa; ensure UTF-8 safety
-            const utf8Bytes = new TextEncoder().encode(href);
-            let b64 = Buffer.from(utf8Bytes).toString("base64");
-          } catch (e) {
-            b64 = null; // fallback if base64 fails
-          }
-          const rewritten = b64
-            ? `vscode://${extensionId}/open?href_b64=${b64}`
-            : `vscode://${extensionId}/open?href=${encodeURIComponent(href)}`;
+          let utf8Bytes = new TextEncoder().encode(href);
+          let b64 = Buffer.from(utf8Bytes).toString("base64");
+          let rewritten = `vscode://${extensionId}/open?href_b64=${b64}`
           // Debug log only in devtools of the webview:
           // console.log is fine; VS Code forwards it to Webview Developer Tools
           console.log("[obsidian-links] rewriting preview link ->", rewritten);
