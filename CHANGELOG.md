@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - here be dragons
 
+## 0.1.1 - 2025-08-20
+
+- Add some marketplace metadata
+
 ## 0.1.0 - 2025-08-20
 
 - Initial release
