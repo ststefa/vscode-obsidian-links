@@ -16,7 +16,7 @@ Using the extension couldn't be any simpler:
 
 1. Install it.
 1. Open a markdown file that contains some `obsidian://...` link.
-1. As with any links, if you're in the source view, Cmd+Click the link. If you're in the Preview, just click the link.
+1. As with any link, if you're in the source view, Cmd+Click it. If you're in the Preview, just click it.
 1. You might be asked permission to open the link in this plugin. Say ok.
 1. Obsidian should pop up, showing the link target.
 
@@ -38,4 +38,4 @@ Start-Process 'obsidian://...'
 
 This should open Obsidian because it should've installed a URL-handler for this schema. This mechanism is the prereq to use this plugin. If it does not work, something is wrong with your Obsidian installation.
 
-If that does work, then there's likely some problem with this extension. I added some log statements in the code. You can see the output in the builtin developer tools (on a Mac: Help > Toggle Developer Tools, then select the "Console" tab). If you suspect a code problem, open an issue providing that information.
+If it does work, then there's likely some problem with this extension. I added some log statements in the code. You can see the output in the builtin developer tools (on a Mac: Help > Toggle Developer Tools, then select the "Console" tab). If you suspect a code problem, open an issue providing that information.
