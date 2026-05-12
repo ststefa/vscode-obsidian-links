@@ -5,6 +5,9 @@ const vscode = require("vscode");
 // Matches obsidian://... up to whitespace or closing ) ] >
 const OBSIDIAN_LINK_RE = /obsidian:\/\/[^\s)\]>"]+/gi;
 
+const DEFAULT_DOCUMENT_SCHEMES = ["file", "untitled", "vscode-remote"];
+const DEFAULT_MAX_DOCUMENT_SIZE_BYTES = 1_000_000;
+
 /** @param {vscode.ExtensionContext} context */
 function activate(context) {
   console.log("[obsidian-links] activate; activationEvents:", context.extension.packageJSON.activationEvents);
@@ -33,7 +36,22 @@ function activate(context) {
   // 2) Editor: turn obsidian://… into clickable links
   const provider = /** @type {vscode.DocumentLinkProvider} */ ({
     provideDocumentLinks(document) {
+      OBSIDIAN_LINK_RE.lastIndex = 0;
+
+      const config = vscode.workspace.getConfiguration("vscode-obsidian-links");
+      const maxDocumentSizeBytes = config.get(
+        "maxDocumentSizeBytes",
+        DEFAULT_MAX_DOCUMENT_SIZE_BYTES
+      );
+
       const text = document.getText();
+      if (
+        maxDocumentSizeBytes > 0 &&
+        Buffer.byteLength(text, "utf8") > maxDocumentSizeBytes
+      ) {
+        return [];
+      }
+
       const links = [];
       let m;
       while ((m = OBSIDIAN_LINK_RE.exec(text)) !== null) {
@@ -48,7 +66,13 @@ function activate(context) {
       return links;
     },
   });
-  context.subscriptions.push(vscode.languages.registerDocumentLinkProvider({ language: "markdown" }, provider));
+
+  const configuredSchemes = vscode.workspace
+    .getConfiguration("vscode-obsidian-links")
+    .get("documentSchemes", DEFAULT_DOCUMENT_SCHEMES);
+
+  const documentSelectors = configuredSchemes.map((scheme) => ({ scheme }));
+  context.subscriptions.push(vscode.languages.registerDocumentLinkProvider(documentSelectors, provider));
 
   // 3) PREVIEW: Use vscode://<extensionId>/open?href=... via UriHandler
   const extensionId = context.extension.id; // e.g. "StefanSteinert.vscode-obsidian-links"
@@ -103,9 +127,9 @@ function activate(context) {
         const href = tokens[idx].attrs[aIndex][1];
         if (typeof href === "string" && href.startsWith("obsidian://")) {
           // Use base64 to preserve exact obsidian href without double-encoding
-          let utf8Bytes = new TextEncoder().encode(href);
-          let b64 = Buffer.from(utf8Bytes).toString("base64");
-          let rewritten = `vscode://${extensionId}/open?href_b64=${b64}`
+          const utf8Bytes = new TextEncoder().encode(href);
+          const b64 = Buffer.from(utf8Bytes).toString("base64");
+          const rewritten = `vscode://${extensionId}/open?href_b64=${b64}`;
           // Debug log only in devtools of the webview:
           // console.log is fine; VS Code forwards it to Webview Developer Tools
           console.log("[obsidian-links] rewriting preview link ->", rewritten);

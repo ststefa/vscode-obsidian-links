@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Project cleanup
 - here be dragons
+
+## 0.1.3 - 2026-05-12
+
+- Register plugin for any textfile instead of just markdown files
+- Add config option for document schems and max file size
+- Project cleanup
 
 ## 0.1.2 - 2025-08-20
 
